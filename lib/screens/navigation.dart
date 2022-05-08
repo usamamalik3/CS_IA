@@ -33,7 +33,7 @@ class navigationDrawer extends StatelessWidget {
                 onTap: () async {
                   await _auth.signOut();
                   Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => welcome()));
+                      MaterialPageRoute(builder: (context) => Login()));
                 }),
             const ListTile(
               title: Text(

@@ -4,6 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:flutter/material.dart';
 
+import 'login.dart';
+
 class AdminScreen extends StatefulWidget {
   @override
   _AdminScreenState createState() => _AdminScreenState();
@@ -11,26 +13,45 @@ class AdminScreen extends StatefulWidget {
 
 class _AdminScreenState extends State<AdminScreen> {
   TextEditingController emailController = new TextEditingController();
+  TextEditingController ordernoController = new TextEditingController();
 
   String email = " ";
 
-  String address = " ";
-  String username = " ";
-  String role = " ";
-  String password = " ";
+  String orderno = " ";
+  String itemname = " ";
+  String descrip = " ";
+  String orderstatus = " ";
 
   bool ableToEdit = false;
 
   @override
   Widget build(BuildContext context) {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(10, 90, 10, 10),
+          padding: const EdgeInsets.fromLTRB(10, 30, 10, 80),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              Align(
+                alignment: Alignment.topRight,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Tooltip(
+                    message: "Sign out",
+                    child: IconButton(
+                        onPressed: () async {
+                          await _auth.signOut();
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) => Login()));
+                        },
+                        icon: Icon(
+                          Icons.logout_outlined,
+                          color: primarycolor,
+                        )),
+                  ),
+                ),
+              ),
               Text(
                 "Welcome Admin",
                 style: TextStyle(
@@ -62,26 +83,52 @@ class _AdminScreenState extends State<AdminScreen> {
                   } else {}
                 },
               ),
-              SizedBox(
+              const SizedBox(
+                height: 20,
+              ),
+              TextFormField(
+                controller: ordernoController,
+                style: TextStyle(
+                  fontFamily: 'Roboto-Thin',
+                  color: primarycolor,
+                  fontSize: 16,
+                ),
+                decoration: const InputDecoration(
+                  labelText: 'Order no',
+                  prefixIcon: Icon(
+                    Icons.shop_2_outlined,
+                    color: Color(0xff8f53ea),
+                  ),
+                ),
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return "please enter email address";
+                  } else {}
+                },
+              ),
+              const SizedBox(
                 height: 20,
               ),
               ElevatedButton(
                   onPressed: () async {
-                    String userEmail = emailController.text.trim();
+                    String userEmail = emailController.text.trim().toString();
+                    String Orderno = ordernoController.text.trim().toString();
                     var firebaseUser = FirebaseAuth.instance.currentUser;
 
                     final QuerySnapshot snap = await FirebaseFirestore.instance
-                        .collection("users")
-                        .where("email", isEqualTo: userEmail)
+                        // .collection("users")
+                        // .where("email", isEqualTo: userEmail)
+                        .collection("order")
+                        .where("order number", isEqualTo: Orderno)
                         .get();
 
                     setState(() {
                       email = userEmail;
-
-                      role = snap.docs[0]['role'];
-                      password = snap.docs[0]['password'];
-                      address = snap.docs[0]['address'];
-                      username = snap.docs[0]['user name'];
+                      orderno = snap.docs[0]['order number'];
+                      print(orderno);
+                      itemname = snap.docs[0]['item name'];
+                      descrip = snap.docs[0]['description '];
+                      orderstatus = snap.docs[0]['order status'];
 
                       ableToEdit = true;
                     });
@@ -136,7 +183,7 @@ class _AdminScreenState extends State<AdminScreen> {
                 ),
               ),
               Text(
-                'address : ' + address,
+                'order number : ' + orderno,
                 style: TextStyle(
                   fontFamily: 'Roboto-Thin',
                   color: primarycolor,
@@ -144,7 +191,7 @@ class _AdminScreenState extends State<AdminScreen> {
                 ),
               ),
               Text(
-                'Role : ' + role,
+                'Item : ' + itemname,
                 style: TextStyle(
                   fontFamily: 'Roboto-Thin',
                   color: primarycolor,
@@ -152,7 +199,15 @@ class _AdminScreenState extends State<AdminScreen> {
                 ),
               ),
               Text(
-                'Password : ' + password,
+                'description : ' + descrip,
+                style: TextStyle(
+                  fontFamily: 'Roboto-Thin',
+                  color: primarycolor,
+                  fontSize: 16,
+                ),
+              ),
+              Text(
+                'order status : ' + orderstatus,
                 style: TextStyle(
                   fontFamily: 'Roboto-Thin',
                   color: primarycolor,

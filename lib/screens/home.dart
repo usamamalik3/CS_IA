@@ -1,4 +1,5 @@
 import 'package:cs_ia/Constraint.dart';
+import 'package:cs_ia/model/cardchoicedetail.dart';
 import 'package:cs_ia/screens/detail.dart';
 import 'package:cs_ia/screens/edit_profile.dart';
 import 'package:cs_ia/screens/navigation.dart';
@@ -68,12 +69,6 @@ class Home extends StatelessWidget {
       ],
     );
   }
-}
-
-class Choice {
-  const Choice({required this.title, required this.icon});
-  final String title;
-  final AssetImage icon;
 }
 
 const List<Choice> choices = const <Choice>[

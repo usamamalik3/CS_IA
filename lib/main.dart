@@ -1,13 +1,18 @@
+import 'dart:async';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cs_ia/Constraint.dart';
 import 'package:cs_ia/screens/Orderhistory.dart';
 import 'package:cs_ia/screens/adminscreen.dart';
 import 'package:cs_ia/screens/edit_profile.dart';
 import 'package:cs_ia/screens/forgetpswd.dart';
 import 'package:cs_ia/screens/home.dart';
+import 'package:cs_ia/screens/loaction.dart';
 import 'package:cs_ia/screens/login.dart';
 import 'package:cs_ia/screens/navigation.dart';
 import 'package:cs_ia/screens/register.dart';
 import 'package:cs_ia/screens/welcome.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
@@ -38,11 +43,71 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'cs_ia',
       theme: ThemeData(
         primarySwatch: colorCustom,
       ),
-      home: welcome(),
+      home: SplashScreen(),
+    );
+  }
+}
+
+class SplashScreen extends StatefulWidget {
+  @override
+  _SplashScreenState createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  void _checkRole() async {
+    String role = "";
+    User? user = FirebaseAuth.instance.currentUser;
+    final DocumentSnapshot snap = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user!.uid)
+        .get();
+
+    setState(() {
+      role = snap["role"];
+    });
+    print(role);
+    if (role == "user") {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => Home()));
+    } else if (role == "admin") {
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => AdminScreen()));
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    Timer(Duration(seconds: 3), () {
+      if (FirebaseAuth.instance.currentUser == null) {
+        // user not logged ==> Login Screen
+        Navigator.pushAndRemoveUntil(context,
+            MaterialPageRoute(builder: (_) => welcome()), (route) => false);
+      } else {
+        // user already logged in ==> Home Screen
+        _checkRole();
+      }
+    });
+    // Timer(
+    //     Duration(seconds: 3),
+    //     () => Navigator.pushReplacement(
+    //         context, MaterialPageRoute(builder: (context) => welcome())));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [Image(image: AssetImage("assets/images/logo.jpg"))],
+        ),
+      ),
     );
   }
 }
