@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cs_ia/Constraint.dart';
+import 'package:cs_ia/model/cardchoicedetail.dart';
 import 'package:cs_ia/screens/home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -91,14 +92,14 @@ class Detail extends StatelessWidget {
                           var firebaseUser = FirebaseAuth.instance.currentUser;
                           var rng = Random();
                           var code = rng.nextInt(900000) + 100000;
+                          String Code = code.toString();
 
                           firestoreInstance
-                              .collection("users")
-                              .doc(firebaseUser!.uid)
                               .collection("order")
                               .doc("$code")
                               .set({
-                            "order number": code,
+                            "User email": "d",
+                            "order number": Code,
                             "Time": DateTime.now(),
                             "item name": ch.title,
                             "description ": descController.text,
